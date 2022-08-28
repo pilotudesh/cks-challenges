@@ -3,7 +3,7 @@
 This repo will contain the solutions for KodeKloud CKS challenges.
 Steps:
 1. Clone the repo and run the following commands.
---
+
 ##Challenge 1
 
 ```
