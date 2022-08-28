@@ -1,4 +1,4 @@
-# cks-challenges
+# CKS - Challenges
 
 This repo will contain the solutions for KodeKloud CKS challenges.
 
