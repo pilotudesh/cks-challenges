@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: alpha-xyz
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/nginx: localhost/custom-nginx
+  name: alpha-xyz
+  namespace: alpha
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alpha-xyz
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: alpha-xyz
+    spec:
+      containers:
+      - image: nginx:alpine
+        name: nginx
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: data-volume
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: alpha-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alpha-svc
+  namespace: alpha
+spec:
+  type: ClusterIP
+  selector:
+    app: alpha-xyz
+  ports:
+    - port: 80
+      targetPort: 80
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: restrict-inbound
+  namespace: alpha
+spec:
+  podSelector:
+    matchLabels:
+      app: alpha-xyz
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: middleware
+      ports:
+        - protocol: TCP
+          port: 80
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: alpha-pvc
+  namespace: alpha
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: local-storage
+  volumeMode: Filesystem
