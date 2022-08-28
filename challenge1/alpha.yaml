@@ -16,10 +16,10 @@ spec:
       labels:
         app: alpha-xyz
       annotations:
-        container.apparmor.security.beta.kubernetes.io/nginx: localhost/custom-nginx
+        container.apparmor.security.beta.kubernetes.io/nginx: localhost/custom-nginx          #Loading AppArmor profile to the pod
     spec:
       containers:
-      - image: nginx:alpine
+      - image: nginx:alpine                   #Least number of CRITICAL vulnerabilities as scanned by Trivy
         name: nginx
         volumeMounts:
         - mountPath: /usr/share/nginx/html
